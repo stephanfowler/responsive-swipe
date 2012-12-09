@@ -1,9 +1,13 @@
 responsive-swipe
 ================
 
-Swipable edition-based page loader, with responsive content loading. 
+Swipable edition-based page loader, with responsive content loading.
 
-###Basic usage
+###Example Site
+
+http://metro.co.uk/
+
+###Usage
 
 Javascript
 ```javascript
@@ -72,7 +76,7 @@ linkSelector: 'a:not(.no-ajax)',
 // The CSS selector for an element containing a data-json attribute with arbitrary data about the page.
 pageDataSelector: '.responsive-swipe-meta',
 
-// The name of the query param sent wth Ajax page-fragment requests
+// The name of the query param sent by Ajax page-fragment requests
 queryParam: 'frag_width',
 
 // CSS selector for a spinner/busy indicator
@@ -95,7 +99,7 @@ swipeViewLib: '/js/responsive-swipe_swipeview.js'
 ```
 
 ###Capabilities detected:
-	
+
 History HTML5 API - allows changing the URL after an ajax load. Without this, we won't go ahead with ajax page loading.
 
 Transitions in CSS - allows sliding of left/right preloaded panes.
@@ -107,10 +111,11 @@ C. History=true, Transitions=true  : pjax page navigation; swiping. (Modern brow
 
 You can override these using the enablePjax and enableSwipe options. (You can only disable supported features, not enable unsupported ones!)
 
+###Dependencies
+
+Requires a [forked version](https://github.com/stephanfowler/SwipeView) of [SwipeView](https://github.com/cubiq/SwipeView) (also included in this repo) and jQuery.
+
 ###Docs
 
-More docs soon. 
+More coming soon.
 
-###Example
-
-http://metro.co.uk/
