@@ -116,15 +116,6 @@ You can override these using the enablePjax and enableSwipe options. (You can on
 
 Requires a [forked version](https://github.com/stephanfowler/SwipeView) of [SwipeView](https://github.com/cubiq/SwipeView) (also included in this repo) and jQuery.
 
-###Minify it
-
-curl \
-  -d output_info=compiled_code \
-  -d compilation_level=SIMPLE_OPTIMIZATIONS \
-  -d code_url=https://raw.github.com/stephanfowler/responsive-swipe/master/responsive-swipe.js \
-  http://closure-compiler.appspot.com/compile \
-	> responsive-swipe.min.js
-
 ###Docs
 
 More coming soon.
