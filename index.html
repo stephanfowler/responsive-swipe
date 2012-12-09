@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Responsive-swipe : Swipable edition-based navigation with responsive content loading. A jQuery plugin." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Responsive-swipe</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/stephanfowler/responsive-swipe">View on GitHub</a>
+
+          <h1 id="project_title">Responsive-swipe</h1>
+          <h2 id="project_tagline">Swipable edition-based navigation with responsive content loading. A jQuery plugin.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/stephanfowler/responsive-swipe/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/stephanfowler/responsive-swipe/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>responsive-swipe</h1>
+
+<p>Swipable edition-based page loader, with responsive content loading.</p>
+
+<h3>Example Site</h3>
+
+<p><a href="http://metro.co.uk/">http://metro.co.uk/</a></p>
+
+<h3>Usage</h3>
+
+<p>Javascript</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">mySwipe</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#pageBody'</span><span class="p">).</span><span class="nx">responsiveSwipe</span><span class="p">({</span>
+    <span class="nx">ajaxRegex</span><span class="o">:</span> <span class="s1">'^&lt;div class="pageBodyInner'</span><span class="p">,</span>
+    <span class="nx">edition</span><span class="o">:</span> <span class="p">[</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'/foo'</span><span class="p">,</span> <span class="s1">'/bar'</span><span class="p">,</span> <span class="s1">'/etc'</span><span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>HTML</p>
+
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"pageBody"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-slider"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-0"</span><span class="nt">&gt;</span>
+            <span class="c">&lt;!-- Empty. First lefthand content will load here --&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"pageBodyInner"</span><span class="nt">&gt;</span>
+                <span class="c">&lt;!-- Initial content here --&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-2"</span><span class="nt">&gt;</span>
+            <span class="c">&lt;!-- Empty. First righthand content will load here --&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<h3>Configuration options</h3>
+
+<p>Values show are defaults:</p>
+
+<div class="highlight"><pre><span class="c1">// Callback after a pane is loaded (including hidden panes); use for fancy js-managed rendering.</span>
+<span class="nx">afterLoad</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span> <span class="cm">/* */</span> <span class="p">},</span>
+
+<span class="c1">// Callback after a pane is made visible; use for analytics events, social buttons, etc.</span>
+<span class="nx">afterShow</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span> <span class="cm">/* */</span> <span class="p">},</span>
+
+<span class="c1">// Validator regular expression for Ajax responses.</span>
+<span class="nx">ajaxRegex</span><span class="o">:</span> <span class="s1">'.*'</span><span class="p">,</span>
+
+<span class="c1">// Possible values for screen width. Wrt. cacheing, the fewer the better.</span>
+<span class="nx">breakpoints</span><span class="o">:</span> <span class="p">[</span><span class="mi">481</span><span class="p">,</span> <span class="mi">768</span><span class="p">,</span> <span class="mi">1024</span><span class="p">],</span>
+
+<span class="c1">// A list of paths - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.</span>
+<span class="nx">edition</span><span class="o">:</span> <span class="p">[],</span>
+
+<span class="c1">// Seconds beyond which any action (click, swipe, etc) should trigger a page reload in order to refresh edition. 21600 secs = 6 hours.</span>
+<span class="nx">expiry</span><span class="o">:</span> <span class="mi">21600</span><span class="p">,</span>
+
+<span class="c1">// Allow ajax+pushState behaviour (requires HTML5 History API support)</span>
+<span class="nx">enablePjax</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+
+<span class="c1">// Allow swipe behaviour (requires CSS Transitions support)</span>
+<span class="nx">enableSwipe</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+
+<span class="c1">// Reload content on window resize; switches the width metric to window- rather than screen-width; for testing only.</span>
+<span class="nx">emulator</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+
+<span class="c1">// Path of homepage</span>
+<span class="nx">homePath</span><span class="o">:</span> <span class="s1">'/'</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for anchors that should initiate an ajax+pushState reload.</span>
+<span class="nx">linkSelector</span><span class="o">:</span> <span class="s1">'a:not(.no-ajax)'</span><span class="p">,</span>
+
+<span class="c1">// The CSS selector for an element containing a data-json attribute with arbitrary data about the page.</span>
+<span class="nx">pageDataSelector</span><span class="o">:</span> <span class="s1">'.responsive-swipe-meta'</span><span class="p">,</span>
+
+<span class="c1">// The name of the query param sent by Ajax page-fragment requests</span>
+<span class="nx">queryParam</span><span class="o">:</span> <span class="s1">'frag_width'</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for a spinner/busy indicator</span>
+<span class="nx">loadingIndicator</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for clickable "next" element, for edition nav</span>
+<span class="nx">arrowNext</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for clickable "previous" element, for edition nav</span>
+<span class="nx">arrowPrev</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for elements to hide as a swipe begins</span>
+<span class="nx">hideFirst</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+
+<span class="c1">// CSS selector for elements as empty as a swipe begins</span>
+<span class="nx">emptyFirst</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+
+<span class="c1">// The custom swipeview.js lib</span>
+<span class="nx">swipeViewLib</span><span class="o">:</span> <span class="s1">'/js/responsive-swipe_swipeview.js'</span>
+</pre></div>
+
+<h3>Capabilities detected:</h3>
+
+<ul>
+<li><p><strong>HTML5 History API</strong> - allows changing the URL after an ajax load. Without this, we won't go ahead with ajax page loading.</p></li>
+<li><p><strong>CSS Transitions</strong> - allows sliding of left/right preloaded panes.</p></li>
+</ul><p>Three capability combinations that are supported are:</p>
+
+<ul>
+<li>History=false                   : no pjax navigation; (IE &lt; 10, Android native browser, etc)</li>
+<li>History=true, Transitions=false : pjax page navigation; no swiping; (An unlikely case; Transitions was widely implemented before History was)</li>
+<li>History=true, Transitions=true  : pjax page navigation; swiping. (Modern browsers)</li>
+</ul><p>You can override these using the enablePjax and enableSwipe options. (You can only disable supported features, not enable unsupported ones!)</p>
+
+<h3>Dependencies</h3>
+
+<p>Requires a <a href="https://github.com/stephanfowler/SwipeView">forked version</a> of <a href="https://github.com/cubiq/SwipeView">SwipeView</a> (also included in this repo) and jQuery.</p>
+
+<h3>Docs</h3>
+
+<p>More coming soon.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Responsive-swipe maintained by <a href="https://github.com/stephanfowler">stephanfowler</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
