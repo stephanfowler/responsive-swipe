@@ -542,7 +542,7 @@
 				e.preventDefault();
 				url = normalizeUrl($(this).attr('href'));
 				if (url === normalizeUrl(window.location.href)) {
-					// Force a complete reload if the link for the current page
+					// Force a complete reload if the link is for the current page
 					window.location.href = $(this).attr('href');
 				}
 				else {
@@ -565,7 +565,7 @@
 				}
 			};
 
-			// Echance for swiping, if transitions are supported. Perhaps we need to load the SwipeView js lib first.
+			// Enhance for swiping if transitions are supported. Perhaps we need to load the SwipeView js lib first.
 			if (!supportsTransitions) {
 				return;
 			}
@@ -637,9 +637,8 @@
 			};
 
 			var preparePane = function (opts) {
-				// dir: 1 is right, -1 is left.
 				var
-					dir = opts.dir || 0,
+					dir = opts.dir || 0, // 1 is right, -1 is left.
 					url = opts.url,
 					doSlideIn = !!opts.slideIn,
 					el;
@@ -648,7 +647,7 @@
 				}
 				url = normalizeUrl(url); // normalize
 				el = panes.masterPages[(paneNow + dir).mod(3)];
-				// Only load if not already loaded
+				// Only load if not already loaded into this pane
 				if (el.dataset.url !== url) {
 					el.innerHTML = ''; // Apparently this is better at preventing memory leaks that jQuert's .empty()
 					load({
@@ -660,7 +659,7 @@
 							if (el === paneVisible) {
 								doAfterShow();
 							}
-							// before slideInPane, confirm that hasn't changed it's spec since request was made
+							// before slideInPane, confirm that this pane hasn't had its url changed since the request was made
 							else if (doSlideIn && el.dataset.url === url) {
 								slideInPane(dir);
 							}
