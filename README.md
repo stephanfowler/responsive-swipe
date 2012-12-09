@@ -100,14 +100,15 @@ swipeViewLib: '/js/responsive-swipe_swipeview.js'
 
 ###Capabilities detected:
 
-History HTML5 API - allows changing the URL after an ajax load. Without this, we won't go ahead with ajax page loading.
+* __HTML5 History API__ - allows changing the URL after an ajax load. Without this, we won't go ahead with ajax page loading.
 
-Transitions in CSS - allows sliding of left/right preloaded panes.
+* __CSS Transitions__ - allows sliding of left/right preloaded panes.
 
 Three capability combinations that are supported are:
-A. History=false                   : no pjax navigation; (IE < 10, Android native browser, etc)
-B. History=true, Transitions=false : pjax page navigation; no swiping; (An unlikely case; Transitions was widely implemented before History was)
-C. History=true, Transitions=true  : pjax page navigation; swiping. (Modern browsers)
+
+* History=false                   : no pjax navigation; (IE < 10, Android native browser, etc)
+* History=true, Transitions=false : pjax page navigation; no swiping; (An unlikely case; Transitions was widely implemented before History was)
+* History=true, Transitions=true  : pjax page navigation; swiping. (Modern browsers)
 
 You can override these using the enablePjax and enableSwipe options. (You can only disable supported features, not enable unsupported ones!)
 
