@@ -46,6 +46,9 @@ afterLoad: function(){ /* */ },
 // Callback after a pane is made visible; use for analytics events, social buttons, etc.
 afterShow: function(){ /* */ },
 
+// Callback before any pane is made visible.
+beforeShow: noop,
+
 // Validator regular expression for Ajax responses.
 ajaxRegex: '.*',
 
@@ -82,19 +85,7 @@ queryParam: 'frag_width',
 // CSS selector for a spinner/busy indicator
 loadingIndicator: undefined,
 
-// CSS selector for clickable "next" element, for edition nav
-arrowNext: undefined,
-
-// CSS selector for clickable "previous" element, for edition nav
-arrowPrev: undefined,
-
-// CSS selector for elements to hide as a swipe begins
-hideFirst: undefined,
-
-// CSS selector for elements as empty as a swipe begins
-emptyFirst:	undefined,
-
-// The custom swipeview.js lib
+// The (modified) swipeview.js lib
 swipeViewLib: '/js/responsive-swipe_swipeview.js'
 ```
 

@@ -15,6 +15,9 @@
 					// Callback after a pane is loaded (including hidden panes); use for fancy js-managed rendering.
 					afterLoad: noop,
 
+					// Callback before any pane is made visible.
+					beforeShow: noop,
+
 					// Callback after a pane is made visible; use for analytics events, social buttons, etc.
 					afterShow: noop,
 
@@ -54,18 +57,6 @@
 					// CSS selector for a spinner/busy indicator
 					loadingIndicator: undefined,
 
-					// CSS selector for clickable "next" element, for edition nav
-					arrowNext:		undefined,
-
-					// CSS selector for clickable "previous" element, for edition nav
-					arrowPrev:		undefined,
-
-					// CSS selector for elements to hide as a swipe begins
-					hideFirst:		undefined,
-
-					// CSS selector for elements as empty as a swipe begins
-					emptyFirst:		undefined,
-
 					// The custom swipeview.js lib
 					swipeViewLib: '/js/responsive-swipe_swipeview.js'
 				},
@@ -95,10 +86,10 @@
 			timeCount = 0,
 			noHistoryPush,
 			paneVisible = $(this).find('#swipeview-slider > #swipeview-masterpage-1')[0],
-			paneNow = 1,
-			paneThen = 1,
 			pageData,
 			panes,
+			paneNow = 1,
+			paneThen = 1,
 			paneVisibleMargin = 0,
 			paneHiddenMargin = 0,
 			referrer = document.referrer;
@@ -169,14 +160,6 @@
 				};
 			}
 			return getWidth();
-		};
-
-		// Make the contentArea height equal to the paneVisible height. (We view the latter through the former.)
-		var updateHeight = function(){
-			var height = $(paneVisible).children().height();
-			if (height) {
-				$(contentArea).height(height + paneVisibleMargin);
-			}
 		};
 
 		// The breakpoint, i.e. the current width rounded down to the highest value in th breakpoint array
@@ -289,6 +272,14 @@
 				repaintContent();
 			}
 		});
+
+		// Make the contentArea height equal to the paneVisible height. (We view the latter through the former.)
+		var updateHeight = function(){
+			var height = $(paneVisible).children().height();
+			if (height) {
+				$(contentArea).height(height + paneVisibleMargin);
+			}
+		};
 
 		// Fire post load actions
 		var doAfterShow = function () {
@@ -477,14 +468,8 @@
 			}
 		}());
 
-		var doFirst = function(){
-			var hideFirst = $(opts.hideFirst);
-			var emptyFirst = $(opts.emptyFirst);
-			doFirst = function(){
-				hideFirst.hide();
-				emptyFirst.empty();
-			};
-			doFirst();
+		var doFirst = function () {
+			opts.beforeShow();
 		};
 
 		// Gets redefined progressively
