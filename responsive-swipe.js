@@ -289,11 +289,17 @@
 			throttle = false;
 
 			if (initialPage) {
+				// Cache the initial page content, if we're doing pjax
+				if (supportsHistory) {
+					cache[initialPage] = $(paneVisible).html();
+				}
+				// Set the url for pushState
 				url = initialPage;
 				urlPush = initialPageRaw;
 				initialPage = initialPageRaw = undefined;
 			}
 			else {
+				// Set the url for pushState
 				url = paneVisible.dataset.url;
 				urlPush = url;
 				referrer = window.location.href; // this works because we havent yet push'd the new URL
@@ -486,7 +492,7 @@
 				return;
 			}
 
-			// Redefine
+			// Redefine this function
 			gotoUrl = function (url) {
 				doFirst();
 				load({
@@ -536,7 +542,7 @@
 				}
 			});
 
-			// Redefine
+			// Redefine this function
 			checkExpiry = function () {
 				// Reload page if the edition has expired
 				if (opts.expiry && (new Date().getTime() - initialTime) > opts.expiry*1000) {
@@ -577,7 +583,7 @@
 
 		var appSetupSwipe = function () {
 
-			// Redefine
+			// Redefine this function
 			gotoUrl = function (url, dir) {
 				var pos = posInEdition(url);
 				doFirst();
@@ -594,14 +600,14 @@
 				});
 			};
 
-			// Redefine
+			// Redefine this function
 			reloadContent = function () {
 				reloadPane( 0);
 				reloadPane( 1);
 				reloadPane(-1);
 			};
 
-			// Redefine
+			// Redefine this function
 			repaintContent = function () {
 				repaintPane( 0);
 				repaintPane( 1);
@@ -679,7 +685,7 @@
 				});
 			};
 
-			// Redefine
+			// Redefine this function
 			throttledSlideIn = function (dir) {
 				if (!throttle) {
 					throttle = true;
@@ -734,11 +740,14 @@
 			// Load the sidepanes
 			loadSidePanes();
 
-			// And reuse appSetup (which is called in doAfterShow) to reload sidepanes after each transition
+			// Redefine appSetup (which is called in every doAfterShow) to reload sidepanes after each transition
 			appSetup = loadSidePanes;
+		
+			// Set a body class. Might be useful.
+			$('body').addClass('has-swipe');
 		};
 
-		// Render the initial content
+		// MAIN: Render the initial content
 		opts.afterLoad(paneVisible);
 
 		// Setup some context
@@ -747,15 +756,6 @@
 		initialPage    = normalizeUrl(initialPageRaw);
 		edition        = opts.edition || [];
 		editionLen     = edition.length;
-
-		// Cache the initial page, if we're doing pjax
-		if (supportsHistory) {
-			cache[initialPage] = $(paneVisible).html();
-			// Set a body class if swipable
-			if (supportsTransitions) {
-				$('body').addClass('has-swipe');
-			}
-		}
 
 		// Decide if we do a content reload or not. In all cases, make sure afterShow eventually runs, which will in turn run appSetup.
 		// 1. Always reload, when in emulator mode, so that the final DOM is appropriate for the current window width
