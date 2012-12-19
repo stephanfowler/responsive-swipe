@@ -28,10 +28,8 @@
 					breakpoints: [481, 768, 1024],
 
 					// A list of paths - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.
+					// Set edition using this option, or in your afterShow function using api.setEdition. The latter method also allows you to change the edition mid-flow .
 					edition: [],
-
-					// Seconds beyond which any action (click, swipe, etc) should trigger a page reload in order to refresh edition. 21600 secs = 6 hours.
-					expiry: 21600,
 
 					// Allow ajax+pushState behaviour (requires HTML5 History API support)
 					enablePjax: true,
@@ -42,8 +40,8 @@
 					// Reload content on window resize; switches the width metric to window- rather than screen-width; for testing only.
 					emulator: false,
 
-					// Path of homepage
-					homePath: '/',
+					// Milliseconds until edition should expire, i.e. cache should flush and/or content should reload instead of Ajax'ing. 0 => no expiry.
+					expiryPeriod: 0,
 
 					// CSS selector for anchors that should initiate an ajax+pushState reload.
 					linkSelector: 'a:not(.no-ajax)',
@@ -72,18 +70,17 @@
 			clickType = 'initial',
 			contentArea = $(this)[0],
 			contentAreaTop = $(this).offset().top,
-			cursor = -1,
-			edition,
+			editionPos = -1,
+			edition = [],
 			editionLen = 0,
+			editionChecksum,
 			supportsHistory = false,
 			supportsTransitions = false,
-			homePath,
-			inEdition = true,
+			inEdition = false,
 			initialPage,
 			initialPageRaw,
-			initialTime,
-			timeTotal = 0,
-			timeCount = 0,
+			ajaxTimeTotal = 0,
+			ajaxCount = 0,
 			noHistoryPush,
 			paneVisible = $(this).find('#swipeview-slider > #swipeview-masterpage-1')[0],
 			pageData,
@@ -125,9 +122,11 @@
 			}
 		};
 
-		Number.prototype.mod = function (n) {
-			return ((this % n) + n) % n;
-		};
+		if (typeof Number.prototype.mod !== 'function') {
+			Number.prototype.mod = function (n) {
+				return ((this % n) + n) % n;
+			};
+		}
 
 		var deBounce = (function () {
 			var timers = {};
@@ -190,8 +189,11 @@
 			if (url && el) {
 				el.dataset = el.dataset || {};
 				el.dataset.url = url;
-				// Already cached ?
+					
+				// query cache.
 				html = cache[url];
+
+				// Is cached ?
 				if (html) {
 					populate(el, html);
 					el.dataset.loadTime = 0;
@@ -228,9 +230,16 @@
 							// Do timing stats
 							loadTime = (new Date()).getTime() - loadTime;
 							el.dataset.loadTime = loadTime;
-							timeTotal += loadTime;
-							timeCount += 1;
-						}
+							ajaxTimeTotal += loadTime;
+							ajaxCount += 1;
+							// Maybe flush cache
+							if (ajaxCount > 50) {
+								ajaxCount = 0;
+								ajaxTimeTotal = 0;
+								cache = {};
+							}
+						},
+						error: function () {}
 					});
 					if (o.showSpinner) {
 						spinner.show();
@@ -283,7 +292,7 @@
 
 		// Fire post load actions
 		var doAfterShow = function () {
-			var url, urlPush, div;
+			var url, div, pos;
 
 			updateHeight();
 			throttle = false;
@@ -294,18 +303,16 @@
 					cache[initialPage] = $(paneVisible).html();
 				}
 				// Set the url for pushState
-				url = initialPage;
-				urlPush = initialPageRaw;
+				url = initialPageRaw;
 				initialPage = initialPageRaw = undefined;
 			}
 			else {
 				// Set the url for pushState
 				url = paneVisible.dataset.url;
-				urlPush = url;
 				referrer = window.location.href; // this works because we havent yet push'd the new URL
 			}
-			setCursor(url);
 
+			// Collect pagedata for the now-visible content
 			pageData = getPageData();
 
 			if (pageData.title) {
@@ -317,29 +324,40 @@
 			if (!noHistoryPush) {
 				var state = {
 					id: uid.nxt(),
-					cursor: cursor
+					editionPos: editionPos
 				};
-				doHistoryPush(state, document.title, urlPush);
+				doHistoryPush(state, document.title, url);
 			}
 			noHistoryPush = false;
+
 			// Update href of canonical link tag, using newly updated location
 			canonicalLink.attr('href', window.location.href);
 
-			// Add some stats
+			// Add some stats to pageData
 			pageData.clickType = clickType;
 			pageData.referrer = referrer;
 			if (paneVisible.dataset && paneVisible.dataset.loadTime) {
 				pageData.loadTime = Math.round(paneVisible.dataset.loadTime)/1000;
-				pageData.loadTimeAverage = Math.round(timeTotal/timeCount)/1000;
+				pageData.loadTimeAverage = Math.round(ajaxTimeTotal/ajaxCount)/1000;
 			}
 
-			// ..and pass it to the aftershow callback
-			opts.afterShow(paneVisible, pageData);
+			// Fire the main aftershow callback
+			opts.afterShow(paneVisible, pageData, api);
 
-			// Reload page if the edition has expired
-			checkExpiry();
-
+			// Update our edition position.
+			// Note: the edition is either set in the initial config, or in opts.afterShow using the passed in api: 
+			// e.g. if you're passing editions via a page's pageData mechanism, do api.setEdition(pageData.edition)
+			pos = posInEdition(normalizeUrl(url));
+			if (pos > -1) {
+				inEdition = true;
+				editionPos = pos;
+			}
+			else {
+				inEdition = false;
+			}
 			// Initialize pjax and swipability, if supported
+			// Once init'd, this fn sets up sidepanes after each page transition.
+			// The sidepanes are selected from the edition, 
 			appSetup();
 		};
 
@@ -366,17 +384,24 @@
 		};
 
 		var urlInEdition = function (pos) {
-			return pos < editionLen ? edition[pos] : homePath;
+			return pos > -1 && pos < editionLen ? edition[pos] : edition[0];
 		};
 
-		var setCursor = function (url) {
-			var pos = posInEdition(url);
-			if (pos > -1) {
-				inEdition = true;
-				cursor = pos;
-			}
-			else {
-				inEdition = false;
+		var setEdition = function (arr) {
+			var
+				checksum, 
+				pos;
+			// Load edition and reset editionPos, if edition is passed differs with existing one
+			if ($.isArray(arr) && arr.length) { 
+				checksum = genChecksum(arr.toString());
+				// Only (re)set edition if different to existing edition, according to checksums
+				if (editionChecksum !== checksum) {
+					edition = arr;
+					editionLen = arr.length;
+					editionPos = -1;
+					inEdition = false,
+					editionChecksum = checksum;
+				}
 			}
 		};
 
@@ -386,8 +411,11 @@
 		};
 
 		var getAdjacentUrl = function (dir) {
+			// dir = 1 : right 
+			// dir = -1 : left
+
 			if (dir === 0) {
-				return urlInEdition(cursor);
+				return urlInEdition(editionPos);
 			}
 			// Cases where we've got next/prev overrides in the current page's data
 			else if (pageData.nextUrl && dir === 1) {
@@ -397,19 +425,19 @@
 				return pageData.prevUrl;
 			}
 			// Cases where we've got an edition position already
-			else if (cursor > -1 && inEdition) {
-				return urlInEdition((cursor + dir).mod(editionLen));
+			else if (editionPos > -1 && inEdition) {
+				return urlInEdition((editionPos + dir).mod(editionLen));
 			}
-			else if (cursor > -1 && !inEdition) {
+			else if (editionPos > -1 && !inEdition) {
 				// We're displaying a non-edition page; have current-edition-page to the left, next-edition-page to right
-				return urlInEdition((cursor + (dir === 1 ? 1 : 0)).mod(editionLen));
+				return urlInEdition((editionPos + (dir === 1 ? 1 : 0)).mod(editionLen));
 			}
 			// Cases where we've NOT yet got an edition position
 			else if (dir === 1) {
 				return urlInEdition(1);
 			}
 			else {
-				return edition[0];
+				return urlInEdition(0);
 			}
 		};
 
@@ -443,7 +471,6 @@
 
 		var validateClick = function (event) {
 			var link = event.currentTarget;
-			if (link.tagName.toUpperCase() !== 'A') { return; }
 			// Middle click, cmd click, and ctrl click should open links in a new tab as normal.
 			if (event.which > 1 || event.metaKey || event.ctrlKey) { return; }
 			// Ignore cross origin links
@@ -455,10 +482,10 @@
 
 		var gotoEditionPage = function (pos) {
 			var dir;
-			if (pos !== cursor && pos < editionLen) {
+			if (pos !== editionPos && pos < editionLen) {
 				doFirst();
-				dir = pos < cursor ? -1 : 1;
-				cursor = pos;
+				dir = pos < editionPos ? -1 : 1;
+				editionPos = pos;
 				gotoUrl(urlInEdition(pos), dir);
 			}
 		};
@@ -478,9 +505,41 @@
 			opts.beforeShow();
 		};
 
-		// Gets redefined progressively
-		var checkExpiry = noop;
+		// This'll be the public api
+		var api = {
+			setEdition: setEdition,
 
+			gotoEditionPage: function(pos, type){
+				clickType = type ? type.toString() : 'position';
+				gotoEditionPage(pos, type);
+			},
+
+			gotoUrl: function(url, type){
+				clickType = type ? type.toString() : 'link';
+				gotoUrl(url);
+			},
+
+			gotoNext: function(type){
+				clickType = type ? type.toString() : 'screen_arrow';
+				throttledSlideIn( 1);
+			},
+
+			gotoPrev: function(type){
+				clickType = type ? type.toString() : 'screen_arrow';
+				throttledSlideIn(-1);
+			}
+		};
+
+		var genChecksum = function (s) {
+			var i;
+			var chk = 0x12345678;
+			for (i = 0; i < s.length; i++) {
+				chk += (s.charCodeAt(i) * i);
+			}
+			return chk;
+		};
+
+		// Setup ajax + pushState, if browser supports it
 		var appSetup = function () {
 
 			// Make this function no-operation for the next time.
@@ -520,7 +579,7 @@
 				uid.set(popId);
 				// Prevent a history stats from being pushed
 				noHistoryPush = true;
-				cursor = state.cursor;
+				editionPos = state.editionPos;
 				// Reveal the newly poped location
 				gotoUrl(normalizeUrl(window.location.href), dir);
 			};
@@ -534,27 +593,13 @@
 				url = normalizeUrl($(this).attr('href'));
 				if (url === normalizeUrl(window.location.href)) {
 					// Force a complete reload if the link is for the current page
-					window.location.href = $(this).attr('href');
+					window.location.reload(true);
 				}
 				else {
 					clickType = 'link';
 					gotoUrl(url);
 				}
 			});
-
-			// Redefine this function
-			checkExpiry = function () {
-				// Reload page if the edition has expired
-				if (opts.expiry && (new Date().getTime() - initialTime) > opts.expiry*1000) {
-					window.location.reload(true);
-				}
-				// Flush the cache when its gets "big". Crude but easy.
-				if (timeCount > 50) {
-					timeCount = 0;
-					timeTotal = 0;
-					cache = {};
-				}
-			};
 
 			// Enhance for swiping if transitions are supported. Perhaps we need to load the SwipeView js lib first.
 			if (!supportsTransitions) {
@@ -591,7 +636,7 @@
 					dir = 0; // load back into visible pane
 				}
 				else if (typeof dir === 'undefined') {
-					dir = pos > -1 && pos < cursor ? -1 : 1;
+					dir = pos > -1 && pos < editionPos ? -1 : 1;
 				}
 				preparePane({
 					url: url,
@@ -627,19 +672,21 @@
 				opts.afterLoad(el);
 			};
 
-			var preparePane = function (opts) {
+			var preparePane = function (o) {
 				var
-					dir = opts.dir || 0, // 1 is right, -1 is left.
-					url = opts.url,
-					doSlideIn = !!opts.slideIn,
+					dir = o.dir || 0, // 1 is right, -1 is left.
+					url = o.url,
+					doSlideIn = !!o.slideIn,
 					el;
+
 				if (!url) {
 					url = getAdjacentUrl(dir);
 				}
 				url = normalizeUrl(url); // normalize
 				el = panes.masterPages[(paneNow + dir).mod(3)];
-				// Only load if not already loaded into this pane
-				if (el.dataset.url !== url) {
+				
+				// Only load if not already loaded into this pane, or cache has ben flushed
+				if (el.dataset.url !== url || $.isEmptyObject(cache)) {
 					el.innerHTML = ''; // Apparently this is better at preventing memory leaks that jQuert's .empty()
 					load({
 						url: url,
@@ -751,11 +798,8 @@
 		opts.afterLoad(paneVisible);
 
 		// Setup some context
-		homePath       = normalizeUrl(opts.homePath);
 		initialPageRaw = window.location.href;
-		initialPage    = normalizeUrl(initialPageRaw);
-		edition        = opts.edition || [];
-		editionLen     = edition.length;
+		initialPage = normalizeUrl(initialPageRaw);
 
 		// Decide if we do a content reload or not. In all cases, make sure afterShow eventually runs, which will in turn run appSetup.
 		// 1. Always reload, when in emulator mode, so that the final DOM is appropriate for the current window width
@@ -775,36 +819,20 @@
 			doAfterShow();
 		}
 
-		// Set a timer, for expiry
-		initialTime = new Date().getTime();
-
+		// Flush cache on expiry
+		if (opts.expiryPeriod) {
+			setInterval(function(){
+				cache = {};
+			}, parseInt(opts.expiryPeriod, 10));
+		}
+	
 		// Set a periodic height adjustment for the content area. Necessary to account for diverse heights of side-panes as they slide in, and dynamic page elements.
 		setInterval(function(){
 			updateHeight();
 		}, 509); // Prime number, for good luck
 
 		// Return an API
-		return {
-			gotoUrl: function(url, type){
-				clickType = type ? type.toString() : 'link';
-				gotoUrl(url);
-			},
-
-			gotoEditionPage: function(pos, type){
-				clickType = type ? type.toString() : 'position';
-				gotoEditionPage(pos, type);
-			},
-
-			gotoNext: function(type){
-				clickType = type ? type.toString() : 'screen_arrow';
-				throttledSlideIn( 1);
-			},
-
-			gotoPrev: function(type){
-				clickType = type ? type.toString() : 'screen_arrow';
-				throttledSlideIn(-1);
-			}
-		};
+		return api;
 
 	};
 

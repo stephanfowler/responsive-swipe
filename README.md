@@ -7,9 +7,9 @@ Swipable edition-based page loader, with responsive content loading.
 
 http://metro.co.uk/
 
-###Usage
+###Javascript
 
-Javascript
+Basic setup with a static edition:
 ```javascript
 var mySwipe = $('#pageBody').responsiveSwipe({
 	ajaxRegex: '^<div class="pageBodyInner',
@@ -17,21 +17,39 @@ var mySwipe = $('#pageBody').responsiveSwipe({
 });
 ```
 
-HTML
+Basic setup with a dynamically switching edition:
+```javascript
+var afterShow = function (context, pageData, api) {
+	// On initial page, or following a click, set the edition to what's passed in via the pageData mechanism
+	// Otherwise, ignore the passed in edition, e.g. following a swipe.
+	// This allows articles to appear in a sipweable mixed-category editions, 
+	// even though they're by default in a category-specific edition. 
+	if( pageData.clickType === 'initial' || pageData.clickType === 'link') {
+		api.setEdition(pageData.edition);
+	}
+}
+
+var mySwipe = $('#pageBody').responsiveSwipe({
+	ajaxRegex: '^<div class="pageBodyInner',
+	afterShow: afterShow
+});
+```
+
+####HTML
 ```html
 <div id="pageBody">
 	<div id="swipeview-slider">
 		<div id="swipeview-masterpage-0">
-			<!-- Empty. First lefthand content will load here -->
+			<!-- Leave empty. First lefthand content will load here -->
 		</div>
 		<div id="swipeview-masterpage-1">
 			<div class="pageBodyInner">
-				<!-- Initial content here -->
+				<!-- Put the initial content in this div -->
 			</div>
 		</div>
 		<div id="swipeview-masterpage-2">
-			<!-- Empty. First righthand content will load here -->
-		</div>
+			<!--Leave empty. First righthand content will load here -->
+		</di
 	</div>
 </div>
 ```
@@ -41,25 +59,23 @@ HTML
 Values show are defaults:
 ```javascript
 // Callback after a pane is loaded (including hidden panes); use for fancy js-managed rendering.
-afterLoad: function(){ /* */ },
-
-// Callback after a pane is made visible; use for analytics events, social buttons, etc.
-afterShow: function(){ /* */ },
+afterLoad: function(){},
 
 // Callback before any pane is made visible.
-beforeShow: noop,
+beforeShow: function(){},
+
+// Callback after a pane is made visible; use for analytics events, social buttons, etc.
+afterShow: function(){},
 
 // Validator regular expression for Ajax responses.
 ajaxRegex: '.*',
 
-// Possible values for screen width. Wrt. cacheing, the fewer the better.
+// Possible values for screen width. For cacheing, the fewer the better.
 breakpoints: [481, 768, 1024],
 
 // A list of paths - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.
+// Set the edition using this option, or in afterShow callback function using api.setEdition. The latter method also allows you to change the edition mid-flow .
 edition: [],
-
-// Seconds beyond which any action (click, swipe, etc) should trigger a page reload in order to refresh edition. 21600 secs = 6 hours.
-expiry: 21600,
 
 // Allow ajax+pushState behaviour (requires HTML5 History API support)
 enablePjax: true,
@@ -70,8 +86,8 @@ enableSwipe: true,
 // Reload content on window resize; switches the width metric to window- rather than screen-width; for testing only.
 emulator: false,
 
-// Path of homepage
-homePath: '/',
+// Milliseconds until edition should expire, i.e. cache should flush and/or content should reload instead of Ajax'ing. 0 => no expiry.
+expiryPeriod: 0,
 
 // CSS selector for anchors that should initiate an ajax+pushState reload.
 linkSelector: 'a:not(.no-ajax)',
@@ -79,13 +95,13 @@ linkSelector: 'a:not(.no-ajax)',
 // The CSS selector for an element containing a data-json attribute with arbitrary data about the page.
 pageDataSelector: '.responsive-swipe-meta',
 
-// The name of the query param sent by Ajax page-fragment requests
+// The name of the query param sent wth Ajax page-fragment requests
 queryParam: 'frag_width',
 
 // CSS selector for a spinner/busy indicator
 loadingIndicator: undefined,
 
-// The (modified) swipeview.js lib
+// The custom swipeview.js lib
 swipeViewLib: '/js/responsive-swipe_swipeview.js'
 ```
 
