@@ -39,31 +39,45 @@
 
 <p><a href="http://metro.co.uk/">http://metro.co.uk/</a></p>
 
-<h3>Usage</h3>
+<h3>Javascript</h3>
 
-<p>Javascript</p>
+<p>Basic setup with a static edition:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">mySwipe</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#pageBody'</span><span class="p">).</span><span class="nx">responsiveSwipe</span><span class="p">({</span>
-    <span class="nx">ajaxRegex</span><span class="o">:</span> <span class="s1">'^&lt;div class="pageBodyInner'</span><span class="p">,</span>
     <span class="nx">edition</span><span class="o">:</span> <span class="p">[</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'/foo'</span><span class="p">,</span> <span class="s1">'/bar'</span><span class="p">,</span> <span class="s1">'/etc'</span><span class="p">]</span>
 <span class="p">});</span>
 </pre></div>
 
-<p>HTML</p>
+<p>Basic setup with a dynamically switching edition:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">afterShow</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">pageData</span><span class="p">,</span> <span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// On initial page, or following a click, set the edition to what's passed in via the pageData mechanism</span>
+    <span class="c1">// Otherwise - eg. following a swipe - ignore the passed-in edition.</span>
+    <span class="k">if</span><span class="p">(</span> <span class="nx">pageData</span><span class="p">.</span><span class="nx">clickType</span> <span class="o">===</span> <span class="s1">'initial'</span> <span class="o">||</span> <span class="nx">pageData</span><span class="p">.</span><span class="nx">clickType</span> <span class="o">===</span> <span class="s1">'link'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">api</span><span class="p">.</span><span class="nx">setEdition</span><span class="p">(</span><span class="nx">pageData</span><span class="p">.</span><span class="nx">edition</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">mySwipe</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#pageBody'</span><span class="p">).</span><span class="nx">responsiveSwipe</span><span class="p">({</span>
+    <span class="nx">afterShow</span><span class="o">:</span> <span class="nx">afterShow</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>HTML</h4>
 
 <div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"pageBody"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-slider"</span><span class="nt">&gt;</span>
         <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-0"</span><span class="nt">&gt;</span>
-            <span class="c">&lt;!-- Empty. First lefthand content will load here --&gt;</span>
+            <span class="c">&lt;!-- Leave empty. First lefthand content will load here --&gt;</span>
         <span class="nt">&lt;/div&gt;</span>
         <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-1"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"pageBodyInner"</span><span class="nt">&gt;</span>
-                <span class="c">&lt;!-- Initial content here --&gt;</span>
+                <span class="c">&lt;!-- Put the initial content in this div --&gt;</span>
             <span class="nt">&lt;/div&gt;</span>
         <span class="nt">&lt;/div&gt;</span>
         <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"swipeview-masterpage-2"</span><span class="nt">&gt;</span>
-            <span class="c">&lt;!-- Empty. First righthand content will load here --&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
+            <span class="c">&lt;!--Leave empty. First righthand content will load here --&gt;</span>
+        <span class="err">&lt;</span>/di
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
 </pre></div>
@@ -73,22 +87,23 @@
 <p>Values show are defaults:</p>
 
 <div class="highlight"><pre><span class="c1">// Callback after a pane is loaded (including hidden panes); use for fancy js-managed rendering.</span>
-<span class="nx">afterLoad</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span> <span class="cm">/* */</span> <span class="p">},</span>
+<span class="nx">afterLoad</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+
+<span class="c1">// Callback before any pane is made visible.</span>
+<span class="nx">beforeShow</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
 
 <span class="c1">// Callback after a pane is made visible; use for analytics events, social buttons, etc.</span>
-<span class="nx">afterShow</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span> <span class="cm">/* */</span> <span class="p">},</span>
+<span class="nx">afterShow</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
 
 <span class="c1">// Validator regular expression for Ajax responses.</span>
 <span class="nx">ajaxRegex</span><span class="o">:</span> <span class="s1">'.*'</span><span class="p">,</span>
 
-<span class="c1">// Possible values for screen width. Wrt. cacheing, the fewer the better.</span>
+<span class="c1">// Possible values for screen width. For cacheing, the fewer the better.</span>
 <span class="nx">breakpoints</span><span class="o">:</span> <span class="p">[</span><span class="mi">481</span><span class="p">,</span> <span class="mi">768</span><span class="p">,</span> <span class="mi">1024</span><span class="p">],</span>
 
 <span class="c1">// A list of paths - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.</span>
+<span class="c1">// Set the edition using this option, or in afterShow callback function using api.setEdition. The latter method also allows you to change the edition mid-flow .</span>
 <span class="nx">edition</span><span class="o">:</span> <span class="p">[],</span>
-
-<span class="c1">// Seconds beyond which any action (click, swipe, etc) should trigger a page reload in order to refresh edition. 21600 secs = 6 hours.</span>
-<span class="nx">expiry</span><span class="o">:</span> <span class="mi">21600</span><span class="p">,</span>
 
 <span class="c1">// Allow ajax+pushState behaviour (requires HTML5 History API support)</span>
 <span class="nx">enablePjax</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -99,8 +114,8 @@
 <span class="c1">// Reload content on window resize; switches the width metric to window- rather than screen-width; for testing only.</span>
 <span class="nx">emulator</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
 
-<span class="c1">// Path of homepage</span>
-<span class="nx">homePath</span><span class="o">:</span> <span class="s1">'/'</span><span class="p">,</span>
+<span class="c1">// Milliseconds until edition should expire, i.e. cache should flush and/or content should reload instead of Ajax'ing. 0 =&gt; no expiry.</span>
+<span class="nx">expiryPeriod</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
 
 <span class="c1">// CSS selector for anchors that should initiate an ajax+pushState reload.</span>
 <span class="nx">linkSelector</span><span class="o">:</span> <span class="s1">'a:not(.no-ajax)'</span><span class="p">,</span>
@@ -108,23 +123,11 @@
 <span class="c1">// The CSS selector for an element containing a data-json attribute with arbitrary data about the page.</span>
 <span class="nx">pageDataSelector</span><span class="o">:</span> <span class="s1">'.responsive-swipe-meta'</span><span class="p">,</span>
 
-<span class="c1">// The name of the query param sent by Ajax page-fragment requests</span>
+<span class="c1">// The name of the query param sent wth Ajax page-fragment requests</span>
 <span class="nx">queryParam</span><span class="o">:</span> <span class="s1">'frag_width'</span><span class="p">,</span>
 
 <span class="c1">// CSS selector for a spinner/busy indicator</span>
 <span class="nx">loadingIndicator</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
-
-<span class="c1">// CSS selector for clickable "next" element, for edition nav</span>
-<span class="nx">arrowNext</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
-
-<span class="c1">// CSS selector for clickable "previous" element, for edition nav</span>
-<span class="nx">arrowPrev</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
-
-<span class="c1">// CSS selector for elements to hide as a swipe begins</span>
-<span class="nx">hideFirst</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
-
-<span class="c1">// CSS selector for elements as empty as a swipe begins</span>
-<span class="nx">emptyFirst</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
 
 <span class="c1">// The custom swipeview.js lib</span>
 <span class="nx">swipeViewLib</span><span class="o">:</span> <span class="s1">'/js/responsive-swipe_swipeview.js'</span>
