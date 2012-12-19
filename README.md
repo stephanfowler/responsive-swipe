@@ -12,7 +12,6 @@ http://metro.co.uk/
 Basic setup with a static edition:
 ```javascript
 var mySwipe = $('#pageBody').responsiveSwipe({
-	ajaxRegex: '^<div class="pageBodyInner',
 	edition: ['/', '/foo', '/bar', '/etc']
 });
 ```
@@ -21,16 +20,13 @@ Basic setup with a dynamically switching edition:
 ```javascript
 var afterShow = function (context, pageData, api) {
 	// On initial page, or following a click, set the edition to what's passed in via the pageData mechanism
-	// Otherwise, ignore the passed in edition, e.g. following a swipe.
-	// This allows articles to appear in a sipweable mixed-category editions, 
-	// even though they're by default in a category-specific edition. 
+	// Otherwise - eg. following a swipe - ignore the passed-in edition.
 	if( pageData.clickType === 'initial' || pageData.clickType === 'link') {
 		api.setEdition(pageData.edition);
 	}
 }
 
 var mySwipe = $('#pageBody').responsiveSwipe({
-	ajaxRegex: '^<div class="pageBodyInner',
 	afterShow: afterShow
 });
 ```
