@@ -689,7 +689,7 @@
 				url = normalizeUrl(url); // normalize
 				el = panes.masterPages[(paneNow + dir).mod(3)];
 				
-				// Only load if not already loaded into this pane, or cache has ben flushed
+				// Only load if not already loaded into this pane, or cache has been flushed
 				if (el.dataset.url !== url || $.isEmptyObject(cache)) {
 					el.innerHTML = ''; // Apparently this is better at preventing memory leaks that jQuert's .empty()
 					load({
