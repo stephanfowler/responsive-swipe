@@ -391,10 +391,10 @@
 			var
 				checksum, 
 				pos;
-			// Load edition and reset editionPos, if edition is passed differs with existing one
-			if ($.isArray(arr) && arr.length) { 
+			// Load edition and reset editionPos, if passed-in edition differs with existing one, and contains three or more url items
+			if ($.isArray(arr) && arr.length >= 3) {
 				checksum = genChecksum(arr.toString());
-				// Only (re)set edition if different to existing edition, according to checksums
+				// Only set edition if different to existing edition, according to checksum
 				if (editionChecksum !== checksum) {
 					edition = arr;
 					editionLen = arr.length;
@@ -601,13 +601,17 @@
 				}
 			});
 
-			// Enhance for swiping if transitions are supported. Perhaps we need to load the SwipeView js lib first.
-			if (!supportsTransitions) {
+			// Enhance for swipability
+			// 
+			// If transitions aren't supported, or the edition has less than three pages, bail
+			if (!supportsTransitions || editionLen < 3) {
 				return;
 			}
+			// If we've already got the (modified) SwipeView lib
 			else if ('SwipeView' in window) {
 				appSetupSwipe();
 			}
+			// If we need to load the (modified) SwipeView lib
 			else {
 				$.ajax({
 						url: opts.swipeViewLib,
@@ -800,6 +804,9 @@
 		// Setup some context
 		initialPageRaw = window.location.href;
 		initialPage = normalizeUrl(initialPageRaw);
+
+		// Load the initial edition 
+		setEdition(opts.edition);
 
 		// Decide if we do a content reload or not. In all cases, make sure afterShow eventually runs, which will in turn run appSetup.
 		// 1. Always reload, when in emulator mode, so that the final DOM is appropriate for the current window width
