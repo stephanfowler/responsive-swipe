@@ -69,7 +69,7 @@ ajaxRegex: '.*',
 // Possible values for screen width. For cacheing, the fewer the better.
 breakpoints: [481, 768, 1024],
 
-// A list of paths - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.
+// A list of absolute paths of pages - e.g. ["\/","\/foo\/", "\/bar\/"] - which left/right actions will step through.
 // Set the edition using this option, or in afterShow callback function using api.setEdition. The latter method also allows you to change the edition mid-flow .
 edition: [],
 
