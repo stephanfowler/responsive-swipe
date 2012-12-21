@@ -514,6 +514,10 @@
 		var api = {
 			setEdition: setEdition,
 
+			getEdition: function(){
+				return edition;
+			},
+
 			gotoEditionPage: function(pos, type){
 				clickType = type ? type.toString() : 'position';
 				gotoEditionPage(pos, type);
