@@ -1,5 +1,5 @@
 // Description: Responsive Swipe jQuery plugin
-// Author: Stephan Fowler
+// Author: Stephan Fowler http://stephanfowler.com/
 // git@github.com:stephanfowler/responsive-swipe.git
 
 (function($, window, document){
