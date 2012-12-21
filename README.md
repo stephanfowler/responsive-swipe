@@ -9,34 +9,51 @@ http://metro.co.uk/
 
 ####HTML
 ```html
+
+<!-- 
+HTML header etc and static (non-swipeable) area. 
+-->
 <div id="myResponsiveSwipe">
 	<div id="swipeview-slider">
 		<div id="swipeview-masterpage-0"><!-- Initial "previous page" will be Ajax'd and injected here --></div>
 		<div id="swipeview-masterpage-1">
-		
-			<!-- 
-			The initial content area. 
-			e.g. <div class="content">Hello World etc.</div>
-			
-			IMPORTANT: pages served by urls ending with the query param ?frag_width=...
-			MUST consist of this content area ONLY, i.e. omitting all HTML  
-			outside of <div class="content">...</div> 
-			
-			This allows the content areas from adjacent urls in the edition to be preloaded 
-			into hidden side panes, in anticipation of being swiped in. 
-			-->
-			
+		<!-- 
+		The initial content area. 
+		e.g. <div class="content">Hello World etc.</div>
+	
+		IMPORTANT: pages served by urls ending with the query param ?frag_width=...
+		MUST consist of this content area ONLY, i.e. omitting all HTML  
+		outside of <div class="content">...</div> 
+	
+		This allows the content areas from adjacent urls in the edition to be preloaded 
+		into hidden side panes, in anticipation of being swiped in. 
+		-->
 		</div>
 		<div id="swipeview-masterpage-2"><!-- Initial "next page" will be Ajax'd and injected here --></div>
 	</div>
 </div>
+<!-- 
+Static (non-swipeable) area, HTML footer etc. 
+-->
 ```
 Use exact id names for ids beginning swipeview-*. The outer element can have an arbitrary ID/class.
 
 Throughout your content area elements, you should prefer class="foo" over id="foo". Three instances of content 
-will always exist in the DOM, meaning that id values will likely become non-unique in the document; this would
-cause problems if you use document.getElementById etc.
+will always exist in the DOM, meaning that id values will likely become non-unique in the documen, causing problems
+if you then use document.getElementById etc.
 
+###Page Fragment Serving
+All pages must recognize the query param ?frag_width=... and return ONLY their content area when that param is present. 
+In the example above this would mean omitting ALL elements outside of <div class="content">...</div>.  
+
+Additionally, <script> tags (in particular those that include this lib and its dependencies) must be placed outside
+of the content area, and thus NOT be included in  served by urls ending with the query param ?frag_width=...
+
+This allows the content areas from adjacent urls in the edition to be preloaded into hidden 
+side panes - in anticipation of being swiped in - but without each loading the whole js mechanism  
+            
+            
+            
 ###Javascript
 Basic setup with a static edition:
 ```javascript
