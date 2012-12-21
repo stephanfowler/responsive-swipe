@@ -19,7 +19,7 @@ http://metro.co.uk/
 			e.g. <div class="content">Hello World etc.</div>
 			
 			IMPORTANT: pages served by urls ending with the query param ?frag_width=...
-			should consist of ONLY this content area, i.e. should omit all the HTML  
+			MUST consist of this content area ONLY, i.e. omitting all HTML  
 			outside of <div class="content">...</div> 
 			
 			This allows the content areas from adjacent urls in the edition to be preloaded 
