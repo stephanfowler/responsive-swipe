@@ -3,10 +3,6 @@ responsive-swipe
 
 Swipable edition-based page loader, with responsive content loading.
 
-###Example Site
-
-http://metro.co.uk/
-
 ####HTML
 ```html
 
@@ -149,7 +145,13 @@ You can override these using the enablePjax and enableSwipe options. (You can on
 
 Requires a [forked version](https://github.com/stephanfowler/SwipeView) of [SwipeView](https://github.com/cubiq/SwipeView) (also included in this repo) and jQuery.
 
+###Example / Demo
+
+Responsive Swipe was developed for and deployed on http://metro.co.uk/
+
+For an demo see https://github.com/andfinally/responsive-swipe-demo
+
 ###Docs
 
-More coming soon.
+More soon.
 
