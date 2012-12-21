@@ -1,7 +1,7 @@
 responsive-swipe
 ================
 
-Swipable edition-based page loader, with responsive content loading.
+Swipable edition-based page loader, with responsive content loading. Developed for and deployed on [Metro](http://metro.co.uk/).
 
 ####HTML
 ```html
