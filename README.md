@@ -44,7 +44,7 @@ if you then use document.getElementById etc.
 
 ###Page Fragment Serving
 All pages must recognize the query param ?frag_width=... and return ONLY their content area when that param is present. 
-In the example above this would mean omitting ALL elements outside of <div class="content">...</div>.  
+In the example above this would mean omitting ALL elements outside of `<div class="content">...</div>`.  
 
 Additionally, <script> tags (in particular those that include this lib and its dependencies) must be placed outside
 of the content area, and thus NOT be included in  served by urls ending with the query param ?frag_width=...
