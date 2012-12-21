@@ -76,13 +76,13 @@ var mySwipe = $('#myResponsiveSwipe').responsiveSwipe({
 Values show are defaults:
 ```javascript
 // Callback after a pane is loaded (including hidden panes); use for fancy js-managed rendering.
-afterLoad: function(){},
+afterLoad: function(context){},
 
 // Callback before any pane is made visible.
 beforeShow: function(){},
 
 // Callback after a pane is made visible; use for analytics events, social buttons, etc.
-afterShow: function(){},
+afterShow: function (context, pageData, api),
 
 // Validator regular expression for Ajax responses.
 ajaxRegex: '.*',
