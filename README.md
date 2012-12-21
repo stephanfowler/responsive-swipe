@@ -7,8 +7,37 @@ Swipable edition-based page loader, with responsive content loading.
 
 http://metro.co.uk/
 
-###Javascript
+####HTML
+```html
+<div id="myResponsiveSwipe">
+	<div id="swipeview-slider">
+		<div id="swipeview-masterpage-0"><!-- Initial "previous page" will be Ajax'd and injected here --></div>
+		<div id="swipeview-masterpage-1">
+		
+			<!-- 
+			The initial content area. 
+			e.g. <div class="content">Hello World etc.</div>
+			
+			IMPORTANT: pages served by urls ending with the query param ?frag_width=...
+			should consist of ONLY this content area, i.e. should omit all the HTML  
+			outside of <div class="content">...</div> 
+			
+			This allows the content areas from adjacent urls in the edition to be preloaded 
+			into hidden side panes, in anticipation of being swiped in. 
+			-->
+			
+		</div>
+		<div id="swipeview-masterpage-2"><!-- Initial "next page" will be Ajax'd and injected here --></div>
+	</div>
+</div>
+```
+Use exact id names for ids beginning swipeview-*. The outer element can have an arbitrary ID/class.
 
+Throughout your content area elements, you should prefer class="foo" over id="foo". Three instances of content 
+will always exist in the DOM, meaning that id values will likely become non-unique in the document; this would
+cause problems if you use document.getElementById etc.
+
+###Javascript
 Basic setup with a static edition:
 ```javascript
 var mySwipe = $('#myResponsiveSwipe').responsiveSwipe({
@@ -30,37 +59,6 @@ var mySwipe = $('#myResponsiveSwipe').responsiveSwipe({
 	afterShow: afterShow
 });
 ```
-
-####HTML
-```html
-<div id="myResponsiveSwipe">
-	<div id="swipeview-slider">
-		<div id="swipeview-masterpage-0">
-			<!-- Leave empty. First lefthand content will load here -->
-		</div>
-		<div id="swipeview-masterpage-1">
-		
-			<!-- 
-			The content area. 
-			e.g. <div class="content">Hello World etc.</div>
-			
-			IMPORTANT: pages served by urls ending with the query param ?frag_width=...
-			should contain ONLY this content area, i.e. should omit all the HTML  
-			outside of <div class="content">. 
-			
-			This allows content areas from adjacent urls in the edition to be preloaded 
-			into hidden side panes, which can then be swiped in. 
-			-->
-			
-		</div>
-		<div id="swipeview-masterpage-2">
-			<!--Leave empty. First righthand content will load here -->
-		</di
-	</div>
-</div>
-```
-You must use exact id names for those beginning swipeview-*, but the outer element can have an arbitrary ID.
-
 
 ###Configuration options
 
