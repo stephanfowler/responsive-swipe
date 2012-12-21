@@ -56,7 +56,12 @@
 					loadingIndicator: undefined,
 
 					// The custom swipeview.js lib
-					swipeViewLib: '/js/responsive-swipe_swipeview.js'
+					swipeViewLib: '/js/responsive-swipe_swipeview.js',
+					
+					// The server's guess of the device width. Set this to zero if you want
+					// the initial page content to be Ajax reloaded if the device width exceeds the
+					// lowest value from the breakpoints option array. 
+					widthGuess: 1024
 				},
 				useropts
 			),
