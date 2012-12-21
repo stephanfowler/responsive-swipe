@@ -123,7 +123,12 @@ queryParam: 'frag_width',
 loadingIndicator: undefined,
 
 // The custom swipeview.js lib
-swipeViewLib: '/js/responsive-swipe_swipeview.js'
+swipeViewLib: '/js/responsive-swipe_swipeview.js',
+
+// The server's guess of the device width. Set this to zero if you want
+// the initial page content to be Ajax reloaded, when the device width exceeds the
+// lowest value in the breakpoints option array. 
+widthGuess: 1024
 ```
 
 ###Capabilities detected:
