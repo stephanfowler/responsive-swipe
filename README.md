@@ -11,7 +11,7 @@ http://metro.co.uk/
 
 Basic setup with a static edition:
 ```javascript
-var mySwipe = $('#pageBody').responsiveSwipe({
+var mySwipe = $('#myResponsiveSwipe').responsiveSwipe({
 	edition: ['/', '/foo', '/bar', '/etc']
 });
 ```
@@ -26,22 +26,32 @@ var afterShow = function (context, pageData, api) {
 	}
 }
 
-var mySwipe = $('#pageBody').responsiveSwipe({
+var mySwipe = $('#myResponsiveSwipe').responsiveSwipe({
 	afterShow: afterShow
 });
 ```
 
 ####HTML
 ```html
-<div id="pageBody">
+<div id="myResponsiveSwipe">
 	<div id="swipeview-slider">
 		<div id="swipeview-masterpage-0">
 			<!-- Leave empty. First lefthand content will load here -->
 		</div>
 		<div id="swipeview-masterpage-1">
-			<div class="pageBodyInner">
-				<!-- Put the initial content in this div -->
-			</div>
+		
+			<!-- 
+			The content area. 
+			e.g. <div class="content">Hello World etc.</div>
+			
+			IMPORTANT: pages served by urls ending with the query param ?frag_width=...
+			should contain ONLY this content area, i.e. should omit all the HTML  
+			outside of <div class="content">. 
+			
+			This allows content areas from adjacent urls in the edition to be preloaded 
+			into hidden side panes, which can then be swiped in. 
+			-->
+			
 		</div>
 		<div id="swipeview-masterpage-2">
 			<!--Leave empty. First righthand content will load here -->
@@ -49,6 +59,8 @@ var mySwipe = $('#pageBody').responsiveSwipe({
 	</div>
 </div>
 ```
+You must use exact id names for those beginning swipeview-*, but the outer element can have an arbitrary ID.
+
 
 ###Configuration options
 
