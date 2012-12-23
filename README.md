@@ -147,9 +147,9 @@ Requires a [forked version](https://github.com/stephanfowler/SwipeView) of [Swip
 
 ###Example / Demo
 
-Responsive Swipe was developed for and deployed on http://metro.co.uk/
+Responsive Swipe was developed for - and is deployed on - http://metro.co.uk/
 
-For an demo see https://github.com/andfinally/responsive-swipe-demo
+For a basic usage demo, see https://github.com/andfinally/responsive-swipe-demo
 
 ###Docs
 
